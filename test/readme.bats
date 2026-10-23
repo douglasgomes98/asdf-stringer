@@ -19,6 +19,5 @@ setup() {
 }
 
 @test "README states the go requirement from 0.50.0" {
-	grep -qF '0.50.0' "$README"
-	grep -qF 'Go 1.26' "$README"
+	grep -qxF '| 0.50.0 and later | Go 1.26 or newer |' "$README"
 }

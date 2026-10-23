@@ -69,6 +69,14 @@ EOF
 	[[ "$stderr" == *"https://proxy.golang.org/golang.org/x/tools/@v/list"* ]]
 }
 
+@test "proxy failure: an empty 200 makes list-all fail with the url on stderr" {
+	stub_curl_exit 0
+	run --separate-stderr env PATH="$STUB_DIR:$PATH" "$PLUGIN_DIR/bin/list-all"
+	[ "$status" -ne 0 ]
+	[ -z "$output" ]
+	[[ "$stderr" == *"https://proxy.golang.org/golang.org/x/tools/@v/list"* ]]
+}
+
 @test "latest-stable prints the highest version" {
 	stub_curl_ok
 	run --separate-stderr env PATH="$STUB_DIR:$PATH" "$PLUGIN_DIR/bin/latest-stable"

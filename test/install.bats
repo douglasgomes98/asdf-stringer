@@ -49,12 +49,11 @@ EOF
 	[[ "$stderr" == *"requires go >= 1.26.0 (running go 1.25"* ]]
 	[ -z "$(find "$TEST_TMP/download" -path '*golang.org/toolchain*' -print -quit)" ]
 
-	export GOMODCACHE="$TEST_TMP/modcache"
+	# Without a prior download, install downloads through the same path and fails the same way.
 	run --separate-stderr run_install version 0.50.0
 	[ "$status" -ne 0 ]
 	[[ "$stderr" == *"requires go >= 1.26.0 (running go 1.25"* ]]
 	assert_nothing_installed 0.50.0
-	[ -z "$(find "$GOMODCACHE" -path '*golang.org/toolchain*' -print -quit 2>/dev/null)" ]
 }
 
 @test "unknown version: 0.99.0 fails with invalid version" {
@@ -133,6 +132,8 @@ EOF
 
 @test "download dir is removable after install" {
 	run --separate-stderr run_download version 0.49.0
+	[ "$status" -eq 0 ]
+	ASDF_DOWNLOAD_PATH="$TEST_TMP/download/0.49.0" run --separate-stderr run_install version 0.49.0
 	[ "$status" -eq 0 ]
 	run rm -rf "$TEST_TMP/download"
 	[ "$status" -eq 0 ]

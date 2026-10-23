@@ -10,6 +10,8 @@ shellcheck --shell=bash --external-sources --source-path=lib/ \
 	scripts/* \
 	test/test_helper.bash
 
+shellcheck --shell=bats --external-sources --source-path=test/ test/*.bats
+
 shfmt --language-dialect bash --diff \
 	bin/* \
 	lib/* \
