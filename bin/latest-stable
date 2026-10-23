@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+current_script_path=${BASH_SOURCE[0]}
+plugin_dir=$(dirname "$(dirname "$current_script_path")")
+
+# shellcheck source=./lib/utils.bash
+source "${plugin_dir}/lib/utils.bash"
+
+query="${1:-}"
+
+versions=$(list_all_versions | sort_versions)
+version=$(printf '%s\n' "$versions" | awk -v q="$query" 'index($0, q) == 1' | tail -n1)
+
+[ -n "$version" ] || fail "no version matching '$query'"
+echo "$version"
