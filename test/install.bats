@@ -43,12 +43,18 @@ EOF
 }
 
 @test "newer go: 0.50.0 on go 1.25 fails without downloading a toolchain" {
-	export GOMODCACHE="$TEST_TMP/modcache" GOTOOLCHAIN=auto
+	export GOTOOLCHAIN=auto
+	run --separate-stderr run_download version 0.50.0
+	[ "$status" -ne 0 ]
+	[[ "$stderr" == *"requires go >= 1.26.0 (running go 1.25"* ]]
+	[ -z "$(find "$TEST_TMP/download" -path '*golang.org/toolchain*' -print -quit)" ]
+
+	export GOMODCACHE="$TEST_TMP/modcache"
 	run --separate-stderr run_install version 0.50.0
 	[ "$status" -ne 0 ]
 	[[ "$stderr" == *"requires go >= 1.26.0 (running go 1.25"* ]]
-	[ -z "$(find "$GOMODCACHE" -path '*golang.org/toolchain*' -print -quit)" ]
 	assert_nothing_installed 0.50.0
+	[ -z "$(find "$GOMODCACHE" -path '*golang.org/toolchain*' -print -quit 2>/dev/null)" ]
 }
 
 @test "unknown version: 0.99.0 fails with invalid version" {
@@ -113,4 +119,22 @@ EOF
 	[ "$status" -ne 0 ]
 	[[ "$stderr" == *"only versions are supported"* ]]
 	assert_nothing_installed 3c1a2b4
+}
+
+@test "download then offline install builds from the download path" {
+	run --separate-stderr run_download version 0.49.0
+	[ "$status" -eq 0 ]
+	# Any network access from here on fails.
+	HTTPS_PROXY=http://127.0.0.1:9 HTTP_PROXY=http://127.0.0.1:9 \
+		ASDF_DOWNLOAD_PATH="$TEST_TMP/download/0.49.0" run --separate-stderr run_install version 0.49.0
+	[ "$status" -eq 0 ]
+	go version -m "$(installed_binary 0.49.0)" | grep -Eq 'mod[[:space:]]+golang.org/x/tools[[:space:]]+v0\.49\.0'
+}
+
+@test "download dir is removable after install" {
+	run --separate-stderr run_download version 0.49.0
+	[ "$status" -eq 0 ]
+	run rm -rf "$TEST_TMP/download"
+	[ "$status" -eq 0 ]
+	[ ! -e "$TEST_TMP/download" ]
 }

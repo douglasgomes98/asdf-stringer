@@ -16,7 +16,8 @@
 
 # Dependencies
 
-stringer publishes no binaries, so this plugin builds it from source with `go install`.
+stringer publishes no binaries, so this plugin builds it from source: `asdf install` first
+downloads `golang.org/x/tools` and its dependencies, then compiles stringer from that download.
 
 - `bash`, `curl`.
 - Go, active in the directory where you run `asdf install`. With asdf:

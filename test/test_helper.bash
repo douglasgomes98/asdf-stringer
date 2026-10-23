@@ -47,6 +47,15 @@ run_install() {
 		"$PLUGIN_DIR/bin/install"
 }
 
+# run bin/download the way asdf does, into $TEST_TMP/download/<version>.
+run_download() {
+	local install_type="$1" version="$2"
+	ASDF_INSTALL_TYPE="$install_type" \
+		ASDF_INSTALL_VERSION="$version" \
+		ASDF_DOWNLOAD_PATH="$TEST_TMP/download/$version" \
+		"$PLUGIN_DIR/bin/download"
+}
+
 installed_binary() {
 	echo "$TEST_TMP/install/$1/bin/stringer"
 }
