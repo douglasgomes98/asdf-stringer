@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+cat <<'TEXT'
+stringer:    https://pkg.go.dev/golang.org/x/tools/cmd/stringer
+Plugin repo: https://github.com/douglasgomes98/asdf-stringer
+TEXT

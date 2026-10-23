@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Dependencies live here rather than in help.deps: asdf 0.16+ stops after help.deps when it
+# exists, so help.links would never be printed.
+
+cat <<'TEXT'
+stringer generates String() methods for Go integer constants (golang.org/x/tools/cmd/stringer).
+
+stringer publishes no binaries, so this plugin builds it from source with the Go version that is
+active where you run asdf install. Versions are golang.org/x/tools tags without the leading v,
+for example: stringer 0.49.0
+
+Dependencies: Go, active in the directory where you run asdf install. With asdf:
+
+  asdf plugin add golang && asdf install golang <version>
+
+and list golang before stringer in .tool-versions.
+
+golang.org/x/tools 0.50.0 and later need Go 1.26 or newer; 0.49.0 needs Go 1.25.
+The plugin never downloads another Go toolchain: on an older Go the install fails.
+
+TEXT
